@@ -1,5 +1,7 @@
 package me.xdrop.fuzzywuzzy.algorithms;
 
+import me.xdrop.fuzzywuzzy.FuzzySearch;
+
 import java.util.*;
 
 final public class Utils {
@@ -23,6 +25,32 @@ final public class Utils {
 
         return join(col, sep);
 
+    }
+
+    //sort tokens2 with reference to tokens1
+    static String similaritySortAndJoin(String[] tokens1, String[] tokens2, String sep) {
+        for (int i = 0; i < tokens1.length; i++) {
+            final int[] distances = new int[tokens2.length];
+
+            for (int j = i; j < tokens2.length; j++) {
+                distances[j] = FuzzySearch.ratio(tokens1[i], tokens2[j]);
+            }
+            //find max match token
+            int max = 0, maxpos = 0;
+
+            for (int a = i; a < distances.length; a++) {
+                if (distances[a] > max) {
+                    maxpos = a;
+                    max = distances[a];
+                }
+            }
+            //swap
+            final String tmp = tokens2[maxpos];
+            tokens2[maxpos] = tokens2[i];
+            tokens2[i] = tmp;
+        }
+        //join
+        return join(Arrays.asList(tokens2), sep);
     }
 
     static String join(List<String> strings, String sep) {
